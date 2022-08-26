@@ -52,6 +52,8 @@
 #include "CommonLib/dtrace_blockstatistics.h"
 #endif
 
+#include "CommonLib/DebugDecoder.h"
+
 //! \ingroup DecoderLib
 //! \{
 
@@ -608,6 +610,7 @@ void DecCu::xIntraRecACTQT(CodingUnit &cu)
 
 void DecCu::xReconInter(CodingUnit &cu)
 {
+
   if( cu.geoFlag )
   {
     m_pcInterPred->motionCompensationGeo( cu, m_geoMrgCtx );
@@ -626,7 +629,18 @@ void DecCu::xReconInter(CodingUnit &cu)
     const bool chroma = isChromaEnabled(cu.chromaFormat) && cu.Cb().valid();
     if (luma && (chroma || !isChromaEnabled(cu.chromaFormat)))
     {
+      // Felipe: here!
+      fprintf(DebugDecoder::debug_vtm_file, "# CU Inter [%d] (%d, %d) ", cu.slice->getPOC(), cu.lx(), cu.ly());
+      if(cu.affine) {
+        fprintf(DebugDecoder::debug_vtm_file, "(Affine)\n");
+      } else if(cu.geoFlag) {
+        fprintf(DebugDecoder::debug_vtm_file, "(Geo)\n");
+      } else {
+        fprintf(DebugDecoder::debug_vtm_file, "\n");
+      }
+      
       m_pcInterPred->motionCompensation(cu);
+      
     }
     else
     {

@@ -44,6 +44,8 @@
 #include <memory.h>
 #include <algorithm>
 
+#include "DebugDecoder.h"
+
 //! \ingroup CommonLib
 //! \{
 
@@ -1431,6 +1433,23 @@ void InterPrediction::motionCompensation(PredictionUnit &pu, PelUnitBuf &predBuf
   // makes the code follow different paths if chroma is on or off (in the encoder).
   // Therefore for 4:0:0, "chroma" is not changed to false.
   CHECK(predBufWOBIO && pu.ciipFlag, "the case should not happen!");
+
+  if(DebugDecoder::isDecoding && !pu.cu->affine) {
+    int pocRefL0, pocRefL1;
+
+    fprintf(DebugDecoder::debug_vtm_file, "PU (%d,%d)\n", pu.lx(), pu.ly());
+
+    if(pu.refIdx[REF_PIC_LIST_0] >= 0) {
+      pocRefL0 = pu.cu->slice->getRefPic( REF_PIC_LIST_0, pu.refIdx[REF_PIC_LIST_0] )->getPOC();
+      fprintf(DebugDecoder::debug_vtm_file, "MVL0 [%d] (%d,%d)\n", pocRefL0, pu.mv[REF_PIC_LIST_0].getHor(), pu.mv[REF_PIC_LIST_0].getVer());
+    }
+
+    if(pu.refIdx[REF_PIC_LIST_1] >= 0) {
+      pocRefL1 = pu.cu->slice->getRefPic( REF_PIC_LIST_1, pu.refIdx[REF_PIC_LIST_1] )->getPOC();
+      fprintf(DebugDecoder::debug_vtm_file, "MVL1 [%d] (%d,%d)\n", pocRefL1, pu.mv[REF_PIC_LIST_1].getHor(), pu.mv[REF_PIC_LIST_1].getVer());
+    } 
+    
+  }
 
   if (!pu.cs->pcv->isEncoder)
   {
