@@ -40,6 +40,7 @@
 #include <time.h>
 #include "DecApp.h"
 #include "program_options_lite.h"
+#include "CommonLib/DebugDecoder.h"
 
 //! \ingroup DecoderApp
 //! \{
@@ -51,6 +52,8 @@
 int main(int argc, char* argv[])
 {
   int returnCode = EXIT_SUCCESS;
+
+  DebugDecoder::init();
 
   // print information
   fprintf( stdout, "\n" );
@@ -112,6 +115,8 @@ int main(int argc, char* argv[])
   printf("\n Total Time: %12.3f sec.\n", dResult);
 
   delete pcDecApp;
+
+  DebugDecoder::close();
 
   return returnCode;
 }
